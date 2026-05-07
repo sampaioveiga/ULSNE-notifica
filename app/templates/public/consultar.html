@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Consultar Notificação{% endblock %}
+
+{% block content %}
+<div class="form-page form-page--narrow">
+  <div class="form-header">
+    <a href="{{ url_for('public.index') }}" class="back-link">← Voltar</a>
+    <h1>Consultar Estado</h1>
+    <p class="form-intro">Introduza o token que recebeu após submeter a notificação.</p>
+  </div>
+
+  <form method="POST" class="notification-form">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+      {{ form.token.label }}
+      {{ form.token(class="form-control token-input" + (" is-invalid" if form.token.errors else ""), placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", autocomplete="off") }}
+      {% for e in form.token.errors %}<span class="error">{{ e }}</span>{% endfor %}
+    </div>
+    {{ form.submit(class="btn btn-primary btn-lg") }}
+  </form>
+</div>
+{% endblock %}

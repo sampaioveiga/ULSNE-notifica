@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Notificação de Incidentes{% endblock %} — ULSNE</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="{{ url_for('public.index') }}" class="header-logo">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Unidade Local de Saúde Nordeste">
+      </a>
+      <nav class="header-nav">
+        <a href="{{ url_for('public.nova_notificacao') }}">Nova Notificação</a>
+        <a href="{{ url_for('public.consultar') }}">Consultar Estado</a>
+        <a href="{{ url_for('auth.login') }}" class="btn-header-admin">Backoffice</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="site-main">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>© {{ now.year if now is defined else 2025 }} Unidade Local de Saúde Nordeste</span>
+      <span class="footer-sep">·</span>
+      <span>Sistema de Notificação de Incidentes de Violência</span>
+      <span class="footer-sep">·</span>
+      <span>Produzido por Miguel Sampaio da Veiga</span>
+    </div>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

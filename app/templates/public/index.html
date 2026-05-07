@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Notificação de Incidentes de Violência{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">Sistema de Notificação</div>
+    <h1 class="hero-title">Incidentes de<br><span class="accent">Violência</span></h1>
+    <p class="hero-sub">A sua notificação é anónima e confidencial. Contribua para um ambiente de saúde mais seguro.</p>
+    <div class="hero-actions">
+      <a href="{{ url_for('public.nova_notificacao') }}" class="btn btn-primary btn-lg">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Submeter Nova Notificação
+      </a>
+      <a href="{{ url_for('public.consultar') }}" class="btn btn-outline btn-lg">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Consultar Estado
+      </a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="visual-card">
+      <div class="visual-icon">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="30" stroke="#096f35" stroke-width="2" fill="#f0f9f4"/>
+          <path d="M32 18v8M32 34v4" stroke="#096f35" stroke-width="3" stroke-linecap="round"/>
+          <path d="M20 40h24" stroke="#096f35" stroke-width="2"/>
+        </svg>
+      </div>
+      <p>Notificação anónima</p>
+    </div>
+    <div class="visual-card">
+      <div class="visual-icon">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="30" stroke="#e9b903" stroke-width="2" fill="#fefbe8"/>
+          <path d="M22 32l7 7 13-14" stroke="#e9b903" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p>Token de acompanhamento</p>
+    </div>
+    <div class="visual-card">
+      <div class="visual-icon">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="30" stroke="#096f35" stroke-width="2" fill="#f0f9f4"/>
+          <path d="M20 20h24v18H20zM26 38v6M38 38v6" stroke="#096f35" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p>Acompanhe a resolução</p>
+    </div>
+  </div>
+</section>
+
+<section class="how-it-works">
+  <div class="section-inner">
+    <h2 class="section-title">Como funciona</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Preencha o formulário</h3>
+        <p>Descreva o incidente de forma anónima. Não são recolhidos dados de identificação.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Receba o seu token</h3>
+        <p>Após submissão, recebe um código único para acompanhar a sua notificação.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Acompanhe a resolução</h3>
+        <p>Use o token para consultar o estado e comunicar com os gestores.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

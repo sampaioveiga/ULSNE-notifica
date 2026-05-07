@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Backoffice ULSNE</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body class="login-body">
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="login-brand">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="ULSNE">
+        <p class="login-subtitle">Gestão de Notificações de Incidentes</p>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" class="login-form">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+          {{ form.username.label }}
+          {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else ""), autofocus=true, autocomplete="username") }}
+        </div>
+        <div class="form-group">
+          {{ form.password.label }}
+          {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""), autocomplete="current-password") }}
+        </div>
+        <div class="form-group-inline">
+          {{ form.remember() }} {{ form.remember.label }}
+        </div>
+        {{ form.submit(class="btn btn-primary btn-block") }}
+      </form>
+
+      <a href="{{ url_for('public.index') }}" class="login-back">← Voltar ao site público</a>
+      <p class="login-credit">Produzido por Miguel Sampaio da Veiga</p>
+    </div>
+  </div>
+</body>
+</html>

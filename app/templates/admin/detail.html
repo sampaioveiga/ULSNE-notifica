@@ -1,0 +1,122 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Notificação #{{ notif.id }}{% endblock %}
+
+{% block topbar %}
+  <a href="{{ url_for('backoffice.notifications') }}" class="topbar-back">← Notificações</a>
+  <h2 class="topbar-title">Notificação <span class="ref">#{{ notif.id }}</span></h2>
+  <span class="badge badge-{{ notif.status }} badge-lg">{{ notif.status_label }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="detail-layout">
+
+  <div class="detail-main">
+    <div class="detail-card">
+      <h3>Dados do Incidente</h3>
+      <dl class="detail-dl">
+        <dt>Data / Hora</dt>
+        <dd>{{ notif.data_incidente.strftime('%d/%m/%Y') }}{% if notif.hora_incidente %} às {{ notif.hora_incidente.strftime('%H:%M') }}{% endif %}</dd>
+        <dt>Local</dt>
+        <dd>{{ notif.local_incidente }}{% if notif.servico %} — <em>{{ notif.servico }}</em>{% endif %}</dd>
+        {% if notif.unidade_local %}
+        <dt>Unidade</dt>
+        <dd>{{ notif.unidade_local }}</dd>
+        {% endif %}
+        <dt>Tipo(s) de Violência</dt>
+        <dd><div class="tag-list">{% for t in notif.tipos_violencia_labels %}<span class="tag">{{ t }}</span>{% endfor %}</div></dd>
+        <dt>Vítima</dt>
+        <dd>{{ notif.tipo_vitima | replace('_', ' ') | title }}</dd>
+        {% if notif.categoria_profissional %}
+        <dt>Categoria Profissional</dt>
+        <dd>{{ notif.categoria_profissional | replace('_', ' ') | title }}</dd>
+        {% endif %}
+        <dt>Perpetrador</dt>
+        <dd>{{ notif.tipo_perpetrador | replace('_', ' ') | title }}</dd>
+        <dt>Descrição</dt>
+        <dd class="text-block">{{ notif.descricao }}</dd>
+        {% if notif.testemunhas %}
+        <dt>Testemunhas</dt>
+        <dd class="text-block">{{ notif.testemunhas }}</dd>
+        {% endif %}
+        {% if notif.medidas_tomadas %}
+        <dt>Medidas Tomadas</dt>
+        <dd class="text-block">{{ notif.medidas_tomadas }}</dd>
+        {% endif %}
+        {% if notif.impacto %}
+        <dt>Impacto Percebido</dt>
+        <dd class="text-block">{{ notif.impacto }}</dd>
+        {% endif %}
+      </dl>
+    </div>
+
+    <div class="detail-card">
+      <h3>Histórico de Comunicações</h3>
+      {% if notif.comments %}
+        <div class="comment-thread">
+          {% for comment in notif.comments %}
+            <div class="comment comment--{{ comment.author_type }}">
+              <div class="comment-meta">
+                {% if comment.author_type == 'manager' %}
+                  <span class="comment-author manager-label">{{ comment.author.username if comment.author else 'Gestor' }}</span>
+                {% else %}
+                  <span class="comment-author user-label">Notificante (anónimo)</span>
+                {% endif %}
+                <span class="comment-date">{{ comment.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+              </div>
+              <div class="comment-body">{{ comment.text }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="empty-thread">Sem comunicações ainda.</p>
+      {% endif %}
+
+      <div class="comment-compose">
+        <h4>Adicionar comentário ao notificante</h4>
+        <form method="POST">
+          {{ comment_form.hidden_tag() }}
+          <div class="form-group">
+            {{ comment_form.text(class="form-control textarea" + (" is-invalid" if comment_form.text.errors else ""), rows=4, placeholder="Escreva aqui a resposta ou informação para o notificante...") }}
+            {% for e in comment_form.text.errors %}<span class="error">{{ e }}</span>{% endfor %}
+          </div>
+          <button type="submit" name="comment-submit" class="btn btn-primary">Enviar Comentário</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-sidebar">
+    <div class="detail-card">
+      <h3>Gestão de Estado</h3>
+      <div class="current-status">
+        <span class="badge badge-{{ notif.status }} badge-lg">{{ notif.status_label }}</span>
+      </div>
+      {% if notif.status != 'encerrado' %}
+        <form method="POST" class="status-form">
+          {{ status_form.hidden_tag() }}
+          <div class="form-group">
+            {{ status_form.status.label }}
+            {{ status_form.status(class="form-control select") }}
+          </div>
+          <button type="submit" name="status-submit" class="btn btn-warning btn-block">Atualizar Estado</button>
+        </form>
+      {% else %}
+        <p class="closed-msg">Notificação encerrada. Não é possível alterar o estado.</p>
+      {% endif %}
+    </div>
+
+    <div class="detail-card">
+      <h3>Informação do Registo</h3>
+      <dl class="detail-dl detail-dl--sm">
+        <dt>Submetida</dt>
+        <dd>{{ notif.created_at.strftime('%d/%m/%Y %H:%M') }}</dd>
+        <dt>Última atualização</dt>
+        <dd>{{ notif.updated_at.strftime('%d/%m/%Y %H:%M') }}</dd>
+        <dt>Token (referência)</dt>
+        <dd><code class="token-sm">{{ notif.token[:8] }}…</code></dd>
+      </dl>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}Nova Notificação{% endblock %}
+
+{% block content %}
+<div class="form-page">
+  <div class="form-header">
+    <a href="{{ url_for('public.index') }}" class="back-link">← Voltar</a>
+    <h1>Nova Notificação de Incidente</h1>
+    <p class="form-intro">O preenchimento é anónimo. Após submissão, recebe um token único para acompanhar a sua notificação.</p>
+  </div>
+
+  <form method="POST" class="notification-form" novalidate>
+    {{ form.hidden_tag() }}
+
+    <fieldset class="form-section">
+      <legend class="section-legend">
+        <span class="legend-num">01</span> Dados do Incidente
+      </legend>
+      <div class="form-row">
+        <div class="form-group">
+          {{ form.data_incidente.label }}
+          {{ form.data_incidente(class="form-control" + (" is-invalid" if form.data_incidente.errors else "")) }}
+          {% for e in form.data_incidente.errors %}<span class="error">{{ e }}</span>{% endfor %}
+        </div>
+        <div class="form-group">
+          {{ form.hora_incidente.label }}
+          {{ form.hora_incidente(class="form-control" + (" is-invalid" if form.hora_incidente.errors else "")) }}
+          {% for e in form.hora_incidente.errors %}<span class="error">{{ e }}</span>{% endfor %}
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          {{ form.local_incidente.label }}
+          {{ form.local_incidente(class="form-control" + (" is-invalid" if form.local_incidente.errors else ""), placeholder="Ex: Urgência Geral, Corredor B") }}
+          {% for e in form.local_incidente.errors %}<span class="error">{{ e }}</span>{% endfor %}
+        </div>
+        <div class="form-group">
+          {{ form.servico.label }}
+          {{ form.servico(class="form-control", placeholder="Ex: Medicina Interna") }}
+        </div>
+      </div>
+      <div class="form-group">
+        {{ form.unidade_local.label }}
+        {{ form.unidade_local(class="form-control select" + (" is-invalid" if form.unidade_local.errors else "")) }}
+        {% for e in form.unidade_local.errors %}<span class="error">{{ e }}</span>{% endfor %}
+      </div>
+    </fieldset>
+
+    <fieldset class="form-section">
+      <legend class="section-legend">
+        <span class="legend-num">02</span> Tipo de Violência
+      </legend>
+      <div class="form-group">
+        <span class="checkbox-hint">Selecione todos os tipos aplicáveis</span>
+        <div class="checkbox-grid">
+          {% for subfield in form.tipos_violencia %}
+            <label class="checkbox-label">
+              {{ subfield() }}
+              <span>{{ subfield.label.text }}</span>
+            </label>
+          {% endfor %}
+        </div>
+        {% for e in form.tipos_violencia.errors %}<span class="error">{{ e }}</span>{% endfor %}
+      </div>
+    </fieldset>
+
+    <fieldset class="form-section">
+      <legend class="section-legend">
+        <span class="legend-num">03</span> Partes Envolvidas
+      </legend>
+      <div class="form-row">
+        <div class="form-group">
+          {{ form.tipo_vitima.label }}
+          {{ form.tipo_vitima(class="form-control select" + (" is-invalid" if form.tipo_vitima.errors else ""), id="tipo_vitima") }}
+          {% for e in form.tipo_vitima.errors %}<span class="error">{{ e }}</span>{% endfor %}
+        </div>
+        <div class="form-group">
+          {{ form.tipo_perpetrador.label }}
+          {{ form.tipo_perpetrador(class="form-control select" + (" is-invalid" if form.tipo_perpetrador.errors else "")) }}
+          {% for e in form.tipo_perpetrador.errors %}<span class="error">{{ e }}</span>{% endfor %}
+        </div>
+      </div>
+      <div class="form-group" id="categoria-profissional-group" style="display:none">
+        {{ form.categoria_profissional.label }}
+        {{ form.categoria_profissional(class="form-control select" + (" is-invalid" if form.categoria_profissional.errors else "")) }}
+        {% for e in form.categoria_profissional.errors %}<span class="error">{{ e }}</span>{% endfor %}
+      </div>
+    </fieldset>
+
+    <fieldset class="form-section">
+      <legend class="section-legend">
+        <span class="legend-num">04</span> Descrição e Contexto
+      </legend>
+      <div class="form-group">
+        {{ form.descricao.label }} <span class="required-mark">*</span>
+        {{ form.descricao(class="form-control textarea" + (" is-invalid" if form.descricao.errors else ""), rows=5, placeholder="Descreva detalhadamente o que aconteceu...") }}
+        {% for e in form.descricao.errors %}<span class="error">{{ e }}</span>{% endfor %}
+      </div>
+      <div class="form-group">
+        {{ form.testemunhas.label }}
+        {{ form.testemunhas(class="form-control textarea", rows=3, placeholder="Indique se havia testemunhas (sem identificar nomes)") }}
+      </div>
+    </fieldset>
+
+    <fieldset class="form-section">
+      <legend class="section-legend">
+        <span class="legend-num">05</span> Resposta e Impacto <span class="optional-tag">Opcional</span>
+      </legend>
+      <div class="form-group">
+        {{ form.medidas_tomadas.label }}
+        {{ form.medidas_tomadas(class="form-control textarea", rows=3, placeholder="Descreva as medidas tomadas imediatamente após o incidente") }}
+      </div>
+      <div class="form-group">
+        {{ form.impacto.label }}
+        {{ form.impacto(class="form-control textarea", rows=3, placeholder="Descreva o impacto percebido na vítima ou no ambiente de trabalho") }}
+      </div>
+    </fieldset>
+
+    <div class="form-submit-row">
+      <p class="submit-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        A sua identidade não é registada. Os dados são tratados de forma confidencial.
+      </p>
+      {{ form.submit(class="btn btn-primary btn-lg") }}
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var sel = document.getElementById('tipo_vitima');
+  var grp = document.getElementById('categoria-profissional-group');
+  function toggle() {
+    grp.style.display = sel.value === 'profissional_saude' ? '' : 'none';
+  }
+  sel.addEventListener('change', toggle);
+  toggle();
+})();
+</script>
+{% endblock %}

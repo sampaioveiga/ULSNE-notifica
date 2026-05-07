@@ -1,0 +1,89 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Notificações{% endblock %}
+
+{% block topbar %}
+  <h2 class="topbar-title">Notificações de Incidentes</h2>
+{% endblock %}
+
+{% block content %}
+<div class="toolbar">
+  <form method="GET" class="filter-form">
+    <div class="filter-group">
+      <label>Estado</label>
+      <select name="status" class="form-control select" onchange="this.form.submit()">
+        <option value="">Todos</option>
+        {% for key, label in status_labels.items() %}
+          <option value="{{ key }}" {% if status_filter == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Ordenar por</label>
+      <select name="sort" class="form-control select" onchange="this.form.submit()">
+        <option value="created_at" {% if sort == 'created_at' %}selected{% endif %}>Data de Submissão</option>
+        <option value="data_incidente" {% if sort == 'data_incidente' %}selected{% endif %}>Data do Incidente</option>
+        <option value="status" {% if sort == 'status' %}selected{% endif %}>Estado</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Ordem</label>
+      <select name="order" class="form-control select" onchange="this.form.submit()">
+        <option value="desc" {% if order == 'desc' %}selected{% endif %}>Decrescente</option>
+        <option value="asc" {% if order == 'asc' %}selected{% endif %}>Crescente</option>
+      </select>
+    </div>
+  </form>
+  <div class="toolbar-count">
+    <strong>{{ notifications | length }}</strong> notificação(ões)
+  </div>
+</div>
+
+{% if notifications %}
+<div class="table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Data Incidente</th>
+        <th>Local / Serviço</th>
+        <th>Tipo(s) de Violência</th>
+        <th>Submetida</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for n in notifications %}
+      <tr class="table-row" onclick="window.location='{{ url_for('backoffice.notification_detail', notif_id=n.id) }}'">
+        <td class="col-id">{{ n.id }}</td>
+        <td>{{ n.data_incidente.strftime('%d/%m/%Y') }}</td>
+        <td>
+          <span class="local-main">{{ n.local_incidente }}</span>
+          {% if n.servico %}<span class="local-sub">{{ n.servico }}</span>{% endif %}
+        </td>
+        <td>
+          <div class="tag-list-sm">
+            {% for t in n.tipos_violencia_labels %}<span class="tag-sm">{{ t }}</span>{% endfor %}
+          </div>
+        </td>
+        <td class="col-date">{{ n.created_at.strftime('%d/%m/%Y') }}</td>
+        <td><span class="badge badge-{{ n.status }}">{{ n.status_label }}</span></td>
+        <td class="col-action">
+          <a href="{{ url_for('backoffice.notification_detail', notif_id=n.id) }}" class="btn-table-action" onclick="event.stopPropagation()">Ver →</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+    <circle cx="32" cy="32" r="30" fill="#1e2538" stroke="#2d3550" stroke-width="2"/>
+    <path d="M20 20h24v24H20z" stroke="#3d4a6b" stroke-width="2" rx="2"/>
+    <path d="M26 28h12M26 34h8" stroke="#3d4a6b" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <p>Nenhuma notificação encontrada{% if status_filter %} com o estado selecionado{% endif %}.</p>
+</div>
+{% endif %}
+{% endblock %}

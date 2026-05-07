@@ -1,0 +1,56 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Utilizadores{% endblock %}
+
+{% block topbar %}
+  <h2 class="topbar-title">Gestão de Utilizadores</h2>
+  <a href="{{ url_for('users.create_user') }}" class="btn btn-primary btn-sm">+ Novo Utilizador</a>
+{% endblock %}
+
+{% block content %}
+<div class="table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Utilizador</th>
+        <th>Email</th>
+        <th>Perfil</th>
+        <th>Estado</th>
+        <th>Criado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <td><strong>{{ user.username }}</strong></td>
+        <td>{{ user.email }}</td>
+        <td>
+          {% if user.is_admin %}
+            <span class="tag-sm tag-admin">Administrador</span>
+          {% else %}
+            <span class="tag-sm">Gestor</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if user.is_active %}
+            <span class="badge badge-aberta">Ativo</span>
+          {% else %}
+            <span class="badge badge-encerrado">Inativo</span>
+          {% endif %}
+        </td>
+        <td>{{ user.created_at.strftime('%d/%m/%Y') }}</td>
+        <td class="col-actions">
+          <a href="{{ url_for('users.edit_user', user_id=user.id) }}" class="btn-table-action">Editar</a>
+          <form method="POST" action="{{ url_for('users.toggle_user', user_id=user.id) }}" style="display:inline" onsubmit="return confirm('Confirmar?')">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn-table-action btn-table-{{ 'danger' if user.is_active else 'success' }}">
+              {{ 'Desativar' if user.is_active else 'Ativar' }}
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Estado da Notificação{% endblock %}
+
+{% block content %}
+<div class="estado-page">
+  <div class="estado-header">
+    <a href="{{ url_for('public.consultar') }}" class="back-link">← Consultar outro token</a>
+    <div class="estado-meta">
+      <h1>Notificação <span class="ref-id">#{{ notif.id }}</span></h1>
+      <span class="badge badge-{{ notif.status }} badge-lg">{{ notif.status_label }}</span>
+    </div>
+    <p class="estado-date">Submetida em {{ notif.created_at.strftime('%d/%m/%Y às %H:%M') }}</p>
+  </div>
+
+  <div class="estado-grid">
+    <div class="estado-details-card">
+      <h2>Detalhes do Incidente</h2>
+      <div class="detail-list">
+        <div class="detail-item">
+          <span class="detail-label">Data</span>
+          <span>{{ notif.data_incidente.strftime('%d/%m/%Y') }}{% if notif.hora_incidente %} às {{ notif.hora_incidente.strftime('%H:%M') }}{% endif %}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Local</span>
+          <span>{{ notif.local_incidente }}{% if notif.servico %} — {{ notif.servico }}{% endif %}</span>
+        </div>
+        {% if notif.unidade_local %}
+        <div class="detail-item">
+          <span class="detail-label">Unidade</span>
+          <span>{{ notif.unidade_local }}</span>
+        </div>
+        {% endif %}
+        <div class="detail-item">
+          <span class="detail-label">Tipo(s) de Violência</span>
+          <div class="tag-list">{% for t in notif.tipos_violencia_labels %}<span class="tag">{{ t }}</span>{% endfor %}</div>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Vítima</span>
+          <span>{{ notif.tipo_vitima | replace('_', ' ') | title }}</span>
+        </div>
+        {% if notif.categoria_profissional %}
+        <div class="detail-item">
+          <span class="detail-label">Categoria Profissional</span>
+          <span>{{ notif.categoria_profissional | replace('_', ' ') | title }}</span>
+        </div>
+        {% endif %}
+        <div class="detail-item">
+          <span class="detail-label">Perpetrador</span>
+          <span>{{ notif.tipo_perpetrador | replace('_', ' ') | title }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="estado-thread">
+      <h2>Comunicações</h2>
+
+      {% if notif.comments %}
+        <div class="comment-thread">
+          {% for comment in notif.comments %}
+            <div class="comment comment--{{ comment.author_type }}">
+              <div class="comment-meta">
+                {% if comment.author_type == 'manager' %}
+                  <span class="comment-author manager-label">Gestor ULSNE</span>
+                {% else %}
+                  <span class="comment-author user-label">Notificante</span>
+                {% endif %}
+                <span class="comment-date">{{ comment.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+              </div>
+              <div class="comment-body">{{ comment.text }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="empty-thread">Sem comunicações ainda. Quando um gestor responder, aparecerá aqui.</p>
+      {% endif %}
+
+      {% if notif.status != 'encerrado' %}
+        <div class="comment-compose">
+          <h3>Adicionar comentário</h3>
+          <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+              {{ form.text(class="form-control textarea" + (" is-invalid" if form.text.errors else ""), rows=4, placeholder="Escreva aqui informação adicional ou perguntas...") }}
+              {% for e in form.text.errors %}<span class="error">{{ e }}</span>{% endfor %}
+            </div>
+            {{ form.submit(class="btn btn-primary") }}
+          </form>
+        </div>
+      {% else %}
+        <div class="closed-notice">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Esta notificação está encerrada.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

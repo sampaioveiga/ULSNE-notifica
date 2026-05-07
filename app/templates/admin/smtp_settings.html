@@ -1,0 +1,46 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Configuração SMTP{% endblock %}
+
+{% block topbar %}
+  <h2 class="topbar-title">Configuração SMTP</h2>
+{% endblock %}
+
+{% block content %}
+<div class="form-card">
+  <p class="form-desc">Configure o servidor de email para envio de notificações automáticas. A ligação é feita sem TLS por defeito (porta 25, rede interna).</p>
+  <form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="form-row">
+      <div class="form-group form-group--grow">
+        {{ form.host.label }}
+        {{ form.host(class="form-control" + (" is-invalid" if form.host.errors else ""), placeholder="Ex: mailrelay.ulsne.min-saude.pt") }}
+        {% for e in form.host.errors %}<span class="error">{{ e }}</span>{% endfor %}
+      </div>
+      <div class="form-group form-group--fixed">
+        {{ form.port.label }}
+        {{ form.port(class="form-control" + (" is-invalid" if form.port.errors else "")) }}
+        {% for e in form.port.errors %}<span class="error">{{ e }}</span>{% endfor %}
+      </div>
+    </div>
+    <div class="form-group-inline">
+      {{ form.use_tls() }} {{ form.use_tls.label }}
+      <span class="field-hint">Desativado por defeito (rede interna porta 25)</span>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        {{ form.from_email.label }}
+        {{ form.from_email(class="form-control" + (" is-invalid" if form.from_email.errors else "")) }}
+        {% for e in form.from_email.errors %}<span class="error">{{ e }}</span>{% endfor %}
+      </div>
+      <div class="form-group">
+        {{ form.to_email.label }}
+        {{ form.to_email(class="form-control" + (" is-invalid" if form.to_email.errors else "")) }}
+        {% for e in form.to_email.errors %}<span class="error">{{ e }}</span>{% endfor %}
+      </div>
+    </div>
+    <div class="form-actions">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+</div>
+{% endblock %}

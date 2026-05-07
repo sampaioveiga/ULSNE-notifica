@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Notificação Submetida{% endblock %}
+
+{% block content %}
+<div class="sucesso-page">
+  <div class="sucesso-card">
+    <div class="sucesso-icon">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" fill="#e8f5ee" stroke="#096f35" stroke-width="2"/>
+        <path d="M20 32l9 9 15-16" stroke="#096f35" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h1>Notificação Submetida</h1>
+    <p>A sua notificação foi registada com sucesso. Guarde o token abaixo para acompanhar o estado.</p>
+
+    <div class="token-box">
+      <p class="token-label">O seu token de acompanhamento</p>
+      <code class="token-value" id="token-value">{{ notif.token }}</code>
+      <button class="btn-copy" onclick="copyToken()" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copiar
+      </button>
+    </div>
+
+    <div class="sucesso-warning">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <strong>Atenção:</strong> Não existe forma de recuperar este token. Anote-o agora.
+    </div>
+
+    <div class="sucesso-details">
+      <div class="detail-row">
+        <span>Data do incidente</span>
+        <strong>{{ notif.data_incidente.strftime('%d/%m/%Y') }}</strong>
+      </div>
+      <div class="detail-row">
+        <span>Tipo(s) de violência</span>
+        <strong>{{ notif.tipos_violencia_labels | join(', ') }}</strong>
+      </div>
+      <div class="detail-row">
+        <span>Estado atual</span>
+        <span class="badge badge-{{ notif.status }}">{{ notif.status_label }}</span>
+      </div>
+    </div>
+
+    <div class="sucesso-actions">
+      <a href="{{ url_for('public.estado', token=notif.token) }}" class="btn btn-outline">Ver Notificação</a>
+      <a href="{{ url_for('public.index') }}" class="btn btn-ghost">Voltar ao Início</a>
+    </div>
+  </div>
+</div>
+
+{% block scripts %}
+<script>
+function copyToken() {
+  const val = document.getElementById('token-value').textContent;
+  navigator.clipboard.writeText(val).then(() => {
+    const btn = document.querySelector('.btn-copy');
+    btn.textContent = '✓ Copiado';
+    setTimeout(() => { btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar'; }, 2000);
+  });
+}
+</script>
+{% endblock %}
+{% endblock %}
