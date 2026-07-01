@@ -3,6 +3,11 @@
 
 {% block topbar %}
   <h2 class="topbar-title">Notificações de Incidentes</h2>
+  <div class="topbar-actions">
+    <a href="{{ url_for('backoffice.export_excel', status=status_filter) }}" class="btn btn-primary btn-sm" title="Exportar para Excel">
+      📊 Descarregar Excel
+    </a>
+  </div>
 {% endblock %}
 
 {% block content %}

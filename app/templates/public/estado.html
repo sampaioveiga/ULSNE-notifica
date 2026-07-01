@@ -13,46 +13,120 @@
   </div>
 
   <div class="estado-grid">
+    <!-- Coluna Esquerda: Detalhes -->
     <div class="estado-details-card">
-      <h2>Detalhes do Incidente</h2>
-      <div class="detail-list">
-        <div class="detail-item">
-          <span class="detail-label">Data</span>
-          <span>{{ notif.data_incidente.strftime('%d/%m/%Y') }}{% if notif.hora_incidente %} às {{ notif.hora_incidente.strftime('%H:%M') }}{% endif %}</span>
-        </div>
-        <div class="detail-item">
-          <span class="detail-label">Local</span>
-          <span>{{ notif.local_incidente }}{% if notif.servico %} — {{ notif.servico }}{% endif %}</span>
-        </div>
-        {% if notif.unidade_local %}
-        <div class="detail-item">
-          <span class="detail-label">Unidade</span>
-          <span>{{ notif.unidade_local }}</span>
-        </div>
-        {% endif %}
-        <div class="detail-item">
-          <span class="detail-label">Tipo(s) de Violência</span>
-          <div class="tag-list">{% for t in notif.tipos_violencia_labels %}<span class="tag">{{ t }}</span>{% endfor %}</div>
-        </div>
-        <div class="detail-item">
-          <span class="detail-label">Vítima</span>
-          <span>{{ notif.tipo_vitima | replace('_', ' ') | title }}</span>
-        </div>
-        {% if notif.categoria_profissional %}
-        <div class="detail-item">
-          <span class="detail-label">Categoria Profissional</span>
-          <span>{{ notif.categoria_profissional | replace('_', ' ') | title }}</span>
-        </div>
-        {% endif %}
-        <div class="detail-item">
-          <span class="detail-label">Perpetrador</span>
-          <span>{{ notif.tipo_perpetrador | replace('_', ' ') | title }}</span>
-        </div>
+      <h2>Detalhes da Notificação</h2>
+
+      <div class="detail-section">
+        <h3>Instituição</h3>
+        <dl class="detail-list">
+          <div class="detail-item">
+            <span class="detail-label">Unidade</span>
+            <span>{{ notif.unidade_local }}</span>
+          </div>
+          {% if notif.servico %}
+          <div class="detail-item">
+            <span class="detail-label">Serviço</span>
+            <span>{{ notif.servico }}</span>
+          </div>
+          {% endif %}
+        </dl>
       </div>
+
+      <div class="detail-section">
+        <h3>Incidente</h3>
+        <dl class="detail-list">
+          <div class="detail-item">
+            <span class="detail-label">Data/Hora</span>
+            <span><strong>{{ notif.data_incidente.strftime('%d/%m/%Y %H:%M') }}</strong></span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Local</span>
+            <span>
+              {% set locais = {'gabinete': 'Gabinete/Consultório', 'sala_espera': 'Sala de Espera', 'servico_clinico': 'Serviço/Unidade Clínica', 'corredor': 'Corredor ou Espaço Comum', 'exterior': 'Exterior da Instituição', 'outro': 'Outro'} %}
+              {{ locais.get(notif.local_incidente, notif.local_incidente) }}
+            </span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Tipo(s) de Incidente</span>
+            <div class="tag-list">
+              {% for t in notif.tipos_incidente_labels %}<span class="tag">{{ t }}</span>{% endfor %}
+            </div>
+          </div>
+        </dl>
+      </div>
+
+      <div class="detail-section">
+        <h3>Pessoas Envolvidas</h3>
+        <dl class="detail-list">
+          <div class="detail-item">
+            <span class="detail-label">Tipo de Vítima</span>
+            <span>
+              {% set vitimas = {'profissional': 'Profissional da Instituição', 'utente': 'Utente', 'familiar': 'Familiar/Acompanhante', 'outro': 'Outro'} %}
+              {{ vitimas.get(notif.tipo_vitima, notif.tipo_vitima) }}
+            </span>
+          </div>
+          {% if notif.categoria_profissional %}
+          <div class="detail-item">
+            <span class="detail-label">Categoria Profissional</span>
+            <span>
+              {% set categorias = {'medico': 'Médico', 'enfermeiro': 'Enfermeiro', 'psicologo': 'Psicólogo', 'tecnico': 'Técnico', 'assistente_operacional': 'Assistente Operacional', 'administrativo': 'Administrativo', 'outro': 'Outro'} %}
+              {{ categorias.get(notif.categoria_profissional, notif.categoria_profissional) }}
+            </span>
+          </div>
+          {% endif %}
+          <div class="detail-item">
+            <span class="detail-label">Tipo de Agressor</span>
+            <span>
+              {% set agressores = {'utente': 'Utente', 'familiar': 'Familiar/Acompanhante', 'profissional': 'Profissional da Instituição', 'externa': 'Pessoa Externa', 'desconhecido': 'Desconhecido'} %}
+              {{ agressores.get(notif.tipo_agressor, notif.tipo_agressor) }}
+            </span>
+          </div>
+        </dl>
+      </div>
+
+      {% if notif.danos_fisicos or notif.impacto_psicologico or notif.assistencia_medica %}
+      <div class="detail-section">
+        <h3>Consequências</h3>
+        <dl class="detail-list">
+          {% if notif.danos_fisicos %}
+          <div class="detail-item">
+            <span class="detail-label">Danos Físicos</span>
+            <span>{% if notif.danos_fisicos == 'sim' %}<strong style="color: #dc2626;">Sim</strong>{% elif notif.danos_fisicos == 'nao' %}Não{% else %}Desconhecido{% endif %}</span>
+          </div>
+          {% endif %}
+          {% if notif.impacto_psicologico %}
+          <div class="detail-item">
+            <span class="detail-label">Impacto Psicológico</span>
+            <span>{% if notif.impacto_psicologico == 'sim' %}<strong style="color: #dc2626;">Sim</strong>{% elif notif.impacto_psicologico == 'nao' %}Não{% else %}Desconhecido{% endif %}</span>
+          </div>
+          {% endif %}
+          {% if notif.assistencia_medica %}
+          <div class="detail-item">
+            <span class="detail-label">Assistência Médica</span>
+            <span>{% if notif.assistencia_medica == 'sim' %}<strong>Sim</strong>{% else %}Não{% endif %}</span>
+          </div>
+          {% endif %}
+        </dl>
+      </div>
+      {% endif %}
+
+      <div class="detail-section">
+        <h3>Descrição Completa</h3>
+        <p style="white-space: pre-wrap; line-height: 1.6; color: var(--text-muted);">{{ notif.descricao }}</p>
+      </div>
+
+      {% if notif.existem_testemunhas == 'sim' and notif.descricao_testemunhas %}
+      <div class="detail-section">
+        <h3>Testemunhas</h3>
+        <p style="white-space: pre-wrap; line-height: 1.6; color: var(--text-muted);">{{ notif.descricao_testemunhas }}</p>
+      </div>
+      {% endif %}
     </div>
 
+    <!-- Coluna Direita: Comunicações -->
     <div class="estado-thread">
-      <h2>Comunicações</h2>
+      <h2>Acompanhamento e Comunicações</h2>
 
       {% if notif.comments %}
         <div class="comment-thread">
@@ -76,7 +150,7 @@
 
       {% if notif.status != 'encerrado' %}
         <div class="comment-compose">
-          <h3>Adicionar comentário</h3>
+          <h3>Adicionar Comentário</h3>
           <form method="POST">
             {{ form.hidden_tag() }}
             <div class="form-group">
@@ -89,7 +163,8 @@
       {% else %}
         <div class="closed-notice">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          Esta notificação está encerrada.
+          <strong>Notificação Encerrada</strong><br>
+          Esta notificação foi processada e encerrada.
         </div>
       {% endif %}
     </div>

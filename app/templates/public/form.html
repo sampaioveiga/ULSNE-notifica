@@ -5,17 +5,110 @@
 <div class="form-page">
   <div class="form-header">
     <a href="{{ url_for('public.index') }}" class="back-link">← Voltar</a>
-    <h1>Nova Notificação de Incidente</h1>
-    <p class="form-intro">O preenchimento é anónimo. Após submissão, recebe um token único para acompanhar a sua notificação.</p>
+    <h1>Formulário de Notificação de Incidentes de Violência</h1>
+    <p class="form-intro">Preencha este formulário com a máxima minuciosidade possível. A sua informação é essencial para análise e prevenção.</p>
   </div>
+
+  {% if form.errors %}
+  <div class="flash flash-danger" style="margin-bottom: 2rem;">
+    <strong>Erro no formulário:</strong>
+    <ul style="margin-top: 0.5rem; margin-bottom: 0; padding-left: 1.5rem;">
+      {% for field, errors in form.errors.items() %}
+        {% for error in errors %}
+          <li>{{ field }}: {{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
 
   <form method="POST" class="notification-form" novalidate>
     {{ form.hidden_tag() }}
 
+    <!-- 1. Identificação da Instituição -->
     <fieldset class="form-section">
       <legend class="section-legend">
-        <span class="legend-num">01</span> Dados do Incidente
+        <span class="legend-num">01</span> Identificação da Instituição
       </legend>
+      <div class="form-row">
+        <div class="form-group form-group--grow">
+          {{ form.unidade_local.label }}
+          {{ form.unidade_local(class="form-control" + (" is-invalid" if form.unidade_local.errors else "")) }}
+          {% for e in form.unidade_local.errors %}<span class="error">{{ e }}</span>{% endfor %}
+        </div>
+        <div class="form-group form-group--grow">
+          {{ form.servico.label }}
+          {{ form.servico(class="form-control", placeholder="Ex: Urgência, Pediatria...") }}
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- 2. Informação sobre a Notificação -->
+    <fieldset class="form-section">
+      <legend class="section-legend">
+        <span class="legend-num">02</span> Informação sobre a Notificação
+      </legend>
+
+      <div class="form-group">
+        <span class="field-label">Quem realiza a notificação?</span>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="quem_notifica" value="proprio">
+            <span>Próprio</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="quem_notifica" value="outro">
+            <span>Outro</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group" id="quem_outro_group" style="display:none;">
+        {{ form.quem_notifica_outro.label }}
+        {{ form.quem_notifica_outro(class="form-control") }}
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <span class="field-label">Pretende manter o anonimato?</span>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="eh_anonimo" value="sim" checked>
+              <span>Sim</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="eh_anonimo" value="nao">
+              <span>Não</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div id="dados_notificante_group" style="display:none;">
+        <div class="form-row">
+          <div class="form-group">
+            {{ form.nome_notificante.label }}
+            {{ form.nome_notificante(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.contacto_notificante.label }}
+            {{ form.contacto_notificante(class="form-control", placeholder="Email ou telefone") }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        {{ form.data_notificacao.label }}
+        {{ form.data_notificacao(class="form-control") }}
+      </div>
+    </fieldset>
+
+    <!-- 3. Informação sobre o Incidente -->
+    <fieldset class="form-section">
+      <legend class="section-legend">
+        <span class="legend-num">03</span> Informação sobre o Incidente
+      </legend>
+
       <div class="form-row">
         <div class="form-group">
           {{ form.data_incidente.label }}
@@ -24,102 +117,319 @@
         </div>
         <div class="form-group">
           {{ form.hora_incidente.label }}
-          {{ form.hora_incidente(class="form-control" + (" is-invalid" if form.hora_incidente.errors else "")) }}
-          {% for e in form.hora_incidente.errors %}<span class="error">{{ e }}</span>{% endfor %}
+          {{ form.hora_incidente(class="form-control") }}
         </div>
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          {{ form.local_incidente.label }}
-          {{ form.local_incidente(class="form-control" + (" is-invalid" if form.local_incidente.errors else ""), placeholder="Ex: Urgência Geral, Corredor B") }}
-          {% for e in form.local_incidente.errors %}<span class="error">{{ e }}</span>{% endfor %}
-        </div>
-        <div class="form-group">
-          {{ form.servico.label }}
-          {{ form.servico(class="form-control", placeholder="Ex: Medicina Interna") }}
-        </div>
-      </div>
-      <div class="form-group">
-        {{ form.unidade_local.label }}
-        {{ form.unidade_local(class="form-control select" + (" is-invalid" if form.unidade_local.errors else "")) }}
-        {% for e in form.unidade_local.errors %}<span class="error">{{ e }}</span>{% endfor %}
-      </div>
-    </fieldset>
 
-    <fieldset class="form-section">
-      <legend class="section-legend">
-        <span class="legend-num">02</span> Tipo de Violência
-      </legend>
+      <div class="form-group">
+        {{ form.local_incidente.label }}
+        {{ form.local_incidente(class="form-control" + (" is-invalid" if form.local_incidente.errors else "")) }}
+        {% for e in form.local_incidente.errors %}<span class="error">{{ e }}</span>{% endfor %}
+      </div>
+
+      <div class="form-group" id="local_outro_group" style="display:none;">
+        {{ form.local_incidente_outro.label }}
+        {{ form.local_incidente_outro(class="form-control") }}
+      </div>
+
       <div class="form-group">
         <span class="checkbox-hint">Selecione todos os tipos aplicáveis</span>
         <div class="checkbox-grid">
-          {% for subfield in form.tipos_violencia %}
+          {% for subfield in form.tipos_incidente %}
             <label class="checkbox-label">
               {{ subfield() }}
               <span>{{ subfield.label.text }}</span>
             </label>
           {% endfor %}
         </div>
-        {% for e in form.tipos_violencia.errors %}<span class="error">{{ e }}</span>{% endfor %}
+        {% for e in form.tipos_incidente.errors %}<span class="error">{{ e }}</span>{% endfor %}
+      </div>
+
+      <div class="form-group" id="tipo_outro_group" style="display:none;">
+        {{ form.tipos_incidente_outro.label }}
+        {{ form.tipos_incidente_outro(class="form-control") }}
       </div>
     </fieldset>
 
+    <!-- 4. Informação sobre a Vítima -->
     <fieldset class="form-section">
       <legend class="section-legend">
-        <span class="legend-num">03</span> Partes Envolvidas
+        <span class="legend-num">04</span> Informação sobre a Vítima
       </legend>
+
       <div class="form-row">
         <div class="form-group">
           {{ form.tipo_vitima.label }}
-          {{ form.tipo_vitima(class="form-control select" + (" is-invalid" if form.tipo_vitima.errors else ""), id="tipo_vitima") }}
+          {{ form.tipo_vitima(class="form-control" + (" is-invalid" if form.tipo_vitima.errors else "")) }}
           {% for e in form.tipo_vitima.errors %}<span class="error">{{ e }}</span>{% endfor %}
         </div>
-        <div class="form-group">
-          {{ form.tipo_perpetrador.label }}
-          {{ form.tipo_perpetrador(class="form-control select" + (" is-invalid" if form.tipo_perpetrador.errors else "")) }}
-          {% for e in form.tipo_perpetrador.errors %}<span class="error">{{ e }}</span>{% endfor %}
-        </div>
       </div>
-      <div class="form-group" id="categoria-profissional-group" style="display:none">
+      <div class="form-group" id="categoria_group" style="display:none;">
         {{ form.categoria_profissional.label }}
-        {{ form.categoria_profissional(class="form-control select" + (" is-invalid" if form.categoria_profissional.errors else "")) }}
-        {% for e in form.categoria_profissional.errors %}<span class="error">{{ e }}</span>{% endfor %}
+        {{ form.categoria_profissional(class="form-control") }}
+      </div>
+
+      <div class="form-group">
+        {{ form.nome_vitima.label }}
+        {{ form.nome_vitima(class="form-control", placeholder="Se conhecido e autorizado") }}
       </div>
     </fieldset>
 
+    <!-- 5. Informação sobre o Agressor -->
     <fieldset class="form-section">
       <legend class="section-legend">
-        <span class="legend-num">04</span> Descrição e Contexto
+        <span class="legend-num">05</span> Informação sobre o Agressor
+      </legend>
+
+      <div class="form-row">
+        <div class="form-group">
+          {{ form.tipo_agressor.label }}
+          {{ form.tipo_agressor(class="form-control" + (" is-invalid" if form.tipo_agressor.errors else "")) }}
+          {% for e in form.tipo_agressor.errors %}<span class="error">{{ e }}</span>{% endfor %}
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group form-group--fixed">
+          {{ form.numero_agressores.label }}
+          {{ form.numero_agressores(class="form-control", min="1") }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <span class="field-label">A identidade do agressor é conhecida?</span>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="identidade_conhecida" value="sim">
+            <span>Sim</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="identidade_conhecida" value="nao">
+            <span>Não</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="identidade_conhecida" value="desconhecido">
+            <span>Desconhecido</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group" id="nome_agressor_group" style="display:none;">
+        {{ form.nome_agressor.label }}
+        {{ form.nome_agressor(class="form-control") }}
+      </div>
+    </fieldset>
+
+    <!-- 6. Consequências do Incidente -->
+    <fieldset class="form-section">
+      <legend class="section-legend">
+        <span class="legend-num">06</span> Consequências do Incidente
+      </legend>
+
+      <div class="form-group">
+        <span class="field-label">O incidente provocou danos físicos?</span>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="danos_fisicos" value="sim">
+            <span>Sim</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="danos_fisicos" value="nao">
+            <span>Não</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="danos_fisicos" value="desconhecido">
+            <span>Desconhecido</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <span class="field-label">Impacto psicológico ou emocional?</span>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="impacto_psicologico" value="sim">
+            <span>Sim</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="impacto_psicologico" value="nao">
+            <span>Não</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="impacto_psicologico" value="desconhecido">
+            <span>Desconhecido</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <span class="field-label">Foi necessária assistência médica?</span>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="assistencia_medica" value="sim">
+            <span>Sim</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="assistencia_medica" value="nao">
+            <span>Não</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <span class="field-label">Intervenção de segurança ou autoridades?</span>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="intervencao_autoridades" value="sim">
+            <span>Sim</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="intervencao_autoridades" value="nao">
+            <span>Não</span>
+          </label>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- 7. Resposta ao Incidente -->
+    <fieldset class="form-section">
+      <legend class="section-legend">
+        <span class="legend-num">07</span> Resposta ao Incidente
+      </legend>
+
+      <div class="form-group">
+        <span class="checkbox-hint">Quem foi informado sobre o incidente?</span>
+        <div class="checkbox-grid">
+          {% for subfield in form.quem_foi_informado %}
+            <label class="checkbox-label">
+              {{ subfield() }}
+              <span>{{ subfield.label.text }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="form-group" id="quem_informado_outro_group" style="display:none;">
+        {{ form.quem_informado_outro.label }}
+        {{ form.quem_informado_outro(class="form-control") }}
+      </div>
+
+      <div class="form-group">
+        <span class="checkbox-hint">Foram aplicadas medidas imediatas?</span>
+        <div class="checkbox-grid">
+          {% for subfield in form.medidas_aplicadas %}
+            <label class="checkbox-label">
+              {{ subfield() }}
+              <span>{{ subfield.label.text }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="form-group" id="medidas_outro_group" style="display:none;">
+        {{ form.medidas_outro.label }}
+        {{ form.medidas_outro(class="form-control") }}
+      </div>
+    </fieldset>
+
+    <!-- 8. Testemunhas -->
+    <fieldset class="form-section">
+      <legend class="section-legend">
+        <span class="legend-num">08</span> Testemunhas
+      </legend>
+
+      <div class="form-group">
+        <span class="field-label">Existiam testemunhas do incidente?</span>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="existem_testemunhas" value="sim">
+            <span>Sim</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="existem_testemunhas" value="nao">
+            <span>Não</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="existem_testemunhas" value="desconhecido">
+            <span>Desconhecido</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group" id="testemunhas_group" style="display:none;">
+        {{ form.descricao_testemunhas.label }}
+        {{ form.descricao_testemunhas(class="form-control textarea", rows=3, placeholder="Descreva quem estava presente (sem identificar nomes se preferir)") }}
+      </div>
+    </fieldset>
+
+    <!-- 9. Descrição Detalhada -->
+    <fieldset class="form-section">
+      <legend class="section-legend">
+        <span class="legend-num">09</span> Descrição Detalhada do Incidente
       </legend>
       <div class="form-group">
         {{ form.descricao.label }} <span class="required-mark">*</span>
-        {{ form.descricao(class="form-control textarea" + (" is-invalid" if form.descricao.errors else ""), rows=5, placeholder="Descreva detalhadamente o que aconteceu...") }}
+        {{ form.descricao(class="form-control textarea" + (" is-invalid" if form.descricao.errors else "")) }}
         {% for e in form.descricao.errors %}<span class="error">{{ e }}</span>{% endfor %}
-      </div>
-      <div class="form-group">
-        {{ form.testemunhas.label }}
-        {{ form.testemunhas(class="form-control textarea", rows=3, placeholder="Indique se havia testemunhas (sem identificar nomes)") }}
       </div>
     </fieldset>
 
+    <!-- 10. Avaliação de Risco -->
     <fieldset class="form-section">
       <legend class="section-legend">
-        <span class="legend-num">05</span> Resposta e Impacto <span class="optional-tag">Opcional</span>
+        <span class="legend-num">10</span> Avaliação de Risco
       </legend>
+
       <div class="form-group">
-        {{ form.medidas_tomadas.label }}
-        {{ form.medidas_tomadas(class="form-control textarea", rows=3, placeholder="Descreva as medidas tomadas imediatamente após o incidente") }}
+        <span class="field-label">Considera existir risco de repetição?</span>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="risco_repeticao" value="sim">
+            <span>Sim</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="risco_repeticao" value="nao">
+            <span>Não</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="risco_repeticao" value="nao_sei">
+            <span>Não Sei</span>
+          </label>
+        </div>
       </div>
+
       <div class="form-group">
-        {{ form.impacto.label }}
-        {{ form.impacto(class="form-control textarea", rows=3, placeholder="Descreva o impacto percebido na vítima ou no ambiente de trabalho") }}
+        <span class="field-label">O agressor mantém contacto com a vítima?</span>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="agressor_contacto" value="sim">
+            <span>Sim</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="agressor_contacto" value="nao">
+            <span>Não</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="agressor_contacto" value="desconhecido">
+            <span>Desconhecido</span>
+          </label>
+        </div>
       </div>
+    </fieldset>
+
+    <!-- Confidencialidade -->
+    <fieldset class="form-section confidentiality-section">
+      <legend class="section-legend">
+        <span class="legend-icon">🔒</span> Confidencialidade
+      </legend>
+      <p class="confidentiality-text">
+        A informação recolhida neste formulário será tratada de forma confidencial e utilizada exclusivamente para análise institucional, prevenção de violência e melhoria das condições de segurança.
+      </p>
     </fieldset>
 
     <div class="form-submit-row">
       <p class="submit-note">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        A sua identidade não é registada. Os dados são tratados de forma confidencial.
+        Os seus dados serão processados de forma segura e confidencial.
       </p>
       {{ form.submit(class="btn btn-primary btn-lg") }}
     </div>
@@ -130,13 +440,79 @@
 {% block scripts %}
 <script>
 (function () {
-  var sel = document.getElementById('tipo_vitima');
-  var grp = document.getElementById('categoria-profissional-group');
-  function toggle() {
-    grp.style.display = sel.value === 'profissional_saude' ? '' : 'none';
+  // Função auxiliar para mostrar/esconder elemento
+  const toggle = (id, show) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = show ? '' : 'none';
+  };
+
+  // Toggle "Quem notifica - Outro"
+  document.querySelectorAll('input[name="quem_notifica"]').forEach(el => {
+    el.addEventListener('change', function() {
+      toggle('quem_outro_group', this.value === 'outro');
+    });
+  });
+
+  // Toggle anonimato
+  document.querySelectorAll('input[name="eh_anonimo"]').forEach(el => {
+    el.addEventListener('change', function() {
+      toggle('dados_notificante_group', this.value === 'nao');
+    });
+  });
+
+  // Toggle local outro
+  const localSelect = document.querySelector('select[name="local_incidente"]');
+  if (localSelect) {
+    localSelect.addEventListener('change', function() {
+      toggle('local_outro_group', this.value === 'outro');
+    });
   }
-  sel.addEventListener('change', toggle);
-  toggle();
+
+  // Toggle tipo outro
+  document.querySelectorAll('input[name="tipos_incidente"]').forEach(el => {
+    el.addEventListener('change', function() {
+      const outro = Array.from(document.querySelectorAll('input[name="tipos_incidente"]')).some(x => x.value === 'outro' && x.checked);
+      toggle('tipo_outro_group', outro);
+    });
+  });
+
+  // Toggle categoria profissional
+  const tipoVitivaSelect = document.querySelector('select[name="tipo_vitima"]');
+  if (tipoVitivaSelect) {
+    tipoVitivaSelect.addEventListener('change', function() {
+      toggle('categoria_group', this.value === 'profissional');
+    });
+  }
+
+  // Toggle nome agressor
+  document.querySelectorAll('input[name="identidade_conhecida"]').forEach(el => {
+    el.addEventListener('change', function() {
+      toggle('nome_agressor_group', this.value === 'sim');
+    });
+  });
+
+  // Toggle informados outro
+  document.querySelectorAll('input[name="quem_foi_informado"]').forEach(el => {
+    el.addEventListener('change', function() {
+      const outro = Array.from(document.querySelectorAll('input[name="quem_foi_informado"]')).some(x => x.value === 'outro' && x.checked);
+      toggle('quem_informado_outro_group', outro);
+    });
+  });
+
+  // Toggle medidas outro
+  document.querySelectorAll('input[name="medidas_aplicadas"]').forEach(el => {
+    el.addEventListener('change', function() {
+      const outro = Array.from(document.querySelectorAll('input[name="medidas_aplicadas"]')).some(x => x.value === 'outro' && x.checked);
+      toggle('medidas_outro_group', outro);
+    });
+  });
+
+  // Toggle testemunhas
+  document.querySelectorAll('input[name="existem_testemunhas"]').forEach(el => {
+    el.addEventListener('change', function() {
+      toggle('testemunhas_group', this.value === 'sim');
+    });
+  });
 })();
 </script>
 {% endblock %}

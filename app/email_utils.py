@@ -22,12 +22,13 @@ Foi submetida uma nova notificação de incidente de violência.
 
 ID: {notification.id}
 Token: {notification.token}
-Data do Incidente: {notification.data_incidente}
-Local: {notification.local_incidente}
-Tipo(s) de Violência: {', '.join(notification.tipos_violencia_labels)}
+Data do Incidente: {notification.data_incidente.strftime('%d/%m/%Y %H:%M')}
+Unidade: {notification.unidade_local}
+Tipo(s) de Incidente: {', '.join(notification.tipos_incidente_labels)}
 Estado: {notification.status_label}
 
 Aceda ao backoffice para gerir esta notificação.
+http://localhost:5000/admin/notificacoes/{notification.id}
     """.strip()
 
     msg = MIMEMultipart()

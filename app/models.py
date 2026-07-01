@@ -16,30 +16,7 @@ STATUS_LABELS = {
     STATUS_ENCERRADO: 'Encerrada',
 }
 
-TIPOS_VIOLENCIA = [
-    ('fisica', 'Física'),
-    ('verbal', 'Verbal'),
-    ('psicologica', 'Psicológica'),
-    ('sexual', 'Sexual'),
-    ('patrimonial', 'Patrimonial'),
-    ('outra', 'Outra'),
-]
-
-TIPOS_VITIMA = [
-    ('profissional_saude', 'Profissional de Saúde'),
-    ('doente', 'Doente'),
-    ('visitante', 'Visitante'),
-    ('outro', 'Outro'),
-]
-
-TIPOS_PERPETRADOR = [
-    ('doente', 'Doente'),
-    ('familiar', 'Familiar / Visita'),
-    ('profissional', 'Profissional'),
-    ('desconhecido', 'Desconhecido'),
-    ('outro', 'Outro'),
-]
-
+# Instituições
 UNIDADES_LOCAL = [
     ('Centro de Saúde Alfândega da Fé', 'Centro de Saúde Alfândega da Fé'),
     ('Centro de Saúde Bragança I Sé', 'Centro de Saúde Bragança I Sé'),
@@ -66,16 +43,66 @@ UNIDADES_LOCAL = [
     ('UDEP', 'UDEP'),
 ]
 
-CATEGORIAS_PROFISSIONAIS = [
-    ('assistente_operacional', 'Assistente Operacional'),
-    ('assistente_tecnico', 'Assistente Técnico'),
-    ('enfermeiro', 'Enfermeiro'),
-    ('medico', 'Médico'),
-    ('tecnico_auxiliar_saude', 'Técnico Auxiliar de Saúde'),
-    ('tecnico_diagnostico_terapeutica', 'Técnico de Diagnóstico e Terapêutica'),
-    ('tecnico_superior', 'Técnico Superior'),
-    ('tecnico_superior_saude', 'Técnico Superior de Saúde'),
+# Tipos de Incidente (novo)
+TIPOS_INCIDENTE = [
+    ('verbal', 'Violência Verbal'),
+    ('ameaca', 'Ameaça'),
+    ('psicologica', 'Violência Psicológica'),
+    ('fisica', 'Violência Física'),
+    ('assedio', 'Assédio'),
+    ('discriminacao', 'Discriminação'),
+    ('intimidatorio', 'Comportamento Intimidatório'),
     ('outro', 'Outro'),
+]
+
+# Local do Incidente (novo)
+LOCAIS_INCIDENTE = [
+    ('gabinete', 'Gabinete/Consultório'),
+    ('sala_espera', 'Sala de Espera'),
+    ('servico_clinico', 'Serviço/Unidade Clínica'),
+    ('corredor', 'Corredor ou Espaço Comum'),
+    ('exterior', 'Exterior da Instituição'),
+    ('outro', 'Outro'),
+]
+
+# Categorias Profissionais
+CATEGORIAS_PROFISSIONAIS = [
+    ('medico', 'Médico'),
+    ('enfermeiro', 'Enfermeiro'),
+    ('psicologo', 'Psicólogo'),
+    ('tecnico', 'Técnico'),
+    ('assistente_operacional', 'Assistente Operacional'),
+    ('administrativo', 'Administrativo'),
+    ('outro', 'Outro'),
+]
+
+# Tipos de Vítima (novo)
+TIPOS_VITIMA = [
+    ('profissional', 'Profissional da Instituição'),
+    ('utente', 'Utente'),
+    ('familiar', 'Familiar/Acompanhante'),
+    ('outro', 'Outro'),
+]
+
+# Tipos de Agressor (novo)
+TIPOS_AGRESSOR = [
+    ('utente', 'Utente'),
+    ('familiar', 'Familiar/Acompanhante'),
+    ('profissional', 'Profissional da Instituição'),
+    ('externa', 'Pessoa Externa à Instituição'),
+    ('desconhecido', 'Desconhecido'),
+]
+
+# Opções Sim/Não/Desconhecido
+OPCOES_SIM_NAO_DESC = [
+    ('sim', 'Sim'),
+    ('nao', 'Não'),
+    ('desconhecido', 'Desconhecido'),
+]
+
+OPCOES_SIM_NAO = [
+    ('sim', 'Sim'),
+    ('nao', 'Não'),
 ]
 
 
@@ -86,22 +113,60 @@ class Notification(db.Model):
     token = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     status = db.Column(db.String(20), nullable=False, default=STATUS_ABERTA)
 
-    data_incidente = db.Column(db.Date, nullable=False)
-    hora_incidente = db.Column(db.Time, nullable=True)
-    local_incidente = db.Column(db.String(200), nullable=False)
-    unidade_local = db.Column(db.String(200), nullable=True)
+    # 1. Identificação da Instituição
+    unidade_local = db.Column(db.String(200), nullable=False)
     servico = db.Column(db.String(200), nullable=True)
 
-    tipos_violencia = db.Column(db.String(200), nullable=False)
+    # 2. Informação sobre a Notificação
+    quem_notifica = db.Column(db.String(50), nullable=False)  # 'proprio', 'outro'
+    quem_notifica_outro = db.Column(db.String(200), nullable=True)
+    eh_anonimo = db.Column(db.Boolean, default=True)
+    nome_notificante = db.Column(db.String(200), nullable=True)
+    contacto_notificante = db.Column(db.String(200), nullable=True)
+    data_notificacao = db.Column(db.Date, nullable=False)
+
+    # 3. Informação sobre o Incidente
+    data_incidente = db.Column(db.DateTime, nullable=False)
+    local_incidente = db.Column(db.String(50), nullable=False)
+    local_incidente_outro = db.Column(db.String(200), nullable=True)
+    tipos_incidente = db.Column(db.String(500), nullable=False)  # CSV
+    tipos_incidente_outro = db.Column(db.String(200), nullable=True)
+
+    # 4. Informação sobre a Vítima
     tipo_vitima = db.Column(db.String(50), nullable=False)
-    categoria_profissional = db.Column(db.String(100), nullable=True)
-    tipo_perpetrador = db.Column(db.String(50), nullable=False)
+    categoria_profissional = db.Column(db.String(50), nullable=True)
+    nome_vitima = db.Column(db.String(200), nullable=True)
 
+    # 5. Informação sobre o Agressor
+    tipo_agressor = db.Column(db.String(50), nullable=False)
+    numero_agressores = db.Column(db.Integer, nullable=True)
+    identidade_conhecida = db.Column(db.String(50), nullable=True)  # 'sim', 'nao'
+    nome_agressor = db.Column(db.String(200), nullable=True)
+
+    # 6. Consequências do Incidente
+    danos_fisicos = db.Column(db.String(50), nullable=True)  # 'sim', 'nao', 'desconhecido'
+    impacto_psicologico = db.Column(db.String(50), nullable=True)
+    assistencia_medica = db.Column(db.String(50), nullable=True)
+    intervencao_autoridades = db.Column(db.String(50), nullable=True)
+
+    # 7. Resposta ao Incidente
+    quem_foi_informado = db.Column(db.String(500), nullable=True)  # CSV
+    quem_informado_outro = db.Column(db.String(200), nullable=True)
+    medidas_aplicadas = db.Column(db.String(500), nullable=True)  # CSV
+    medidas_outro = db.Column(db.String(200), nullable=True)
+
+    # 8. Testemunhas
+    existem_testemunhas = db.Column(db.String(50), nullable=True)
+    descricao_testemunhas = db.Column(db.Text, nullable=True)
+
+    # 9. Descrição do Incidente
     descricao = db.Column(db.Text, nullable=False)
-    testemunhas = db.Column(db.Text, nullable=True)
-    medidas_tomadas = db.Column(db.Text, nullable=True)
-    impacto = db.Column(db.Text, nullable=True)
 
+    # 10. Avaliação de Risco
+    risco_repeticao = db.Column(db.String(50), nullable=True)  # 'sim', 'nao', 'nao_sei'
+    agressor_contacto = db.Column(db.String(50), nullable=True)
+
+    # Metadata
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -112,13 +177,13 @@ class Notification(db.Model):
         return STATUS_LABELS.get(self.status, self.status)
 
     @property
-    def tipos_violencia_list(self):
-        return [t.strip() for t in self.tipos_violencia.split(',') if t.strip()]
+    def tipos_incidente_list(self):
+        return [t.strip() for t in self.tipos_incidente.split(',') if t.strip()]
 
     @property
-    def tipos_violencia_labels(self):
-        mapping = dict(TIPOS_VIOLENCIA)
-        return [mapping.get(t, t) for t in self.tipos_violencia_list]
+    def tipos_incidente_labels(self):
+        mapping = dict(TIPOS_INCIDENTE)
+        return [mapping.get(t, t) for t in self.tipos_incidente_list]
 
 
 class Comment(db.Model):

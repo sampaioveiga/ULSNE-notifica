@@ -29,12 +29,16 @@
 
     <div class="sucesso-details">
       <div class="detail-row">
-        <span>Data do incidente</span>
-        <strong>{{ notif.data_incidente.strftime('%d/%m/%Y') }}</strong>
+        <span>Instituição</span>
+        <strong>{{ notif.unidade_local }}</strong>
       </div>
       <div class="detail-row">
-        <span>Tipo(s) de violência</span>
-        <strong>{{ notif.tipos_violencia_labels | join(', ') }}</strong>
+        <span>Data do incidente</span>
+        <strong>{{ notif.data_incidente.strftime('%d/%m/%Y %H:%M') }}</strong>
+      </div>
+      <div class="detail-row">
+        <span>Tipo(s) de incidente</span>
+        <strong>{{ notif.tipos_incidente_labels | join(', ') }}</strong>
       </div>
       <div class="detail-row">
         <span>Estado atual</span>
