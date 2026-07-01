@@ -1,9 +1,9 @@
 {% extends "admin/base_admin.html" %}
-{% block title %}Utilizadores{% endblock %}
+{% block title %}Gestores{% endblock %}
 
 {% block topbar %}
-  <h2 class="topbar-title">Gestão de Utilizadores</h2>
-  <a href="{{ url_for('users.create_user') }}" class="btn btn-primary btn-sm">+ Novo Utilizador</a>
+  <h2 class="topbar-title">Gestão de Gestores</h2>
+  <a href="{{ url_for('users.create_user') }}" class="btn btn-primary btn-sm">+ Novo Gestor</a>
 {% endblock %}
 
 {% block content %}
@@ -13,7 +13,6 @@
       <tr>
         <th>Utilizador</th>
         <th>Email</th>
-        <th>Perfil</th>
         <th>Estado</th>
         <th>Criado</th>
         <th></th>
@@ -24,13 +23,6 @@
       <tr>
         <td><strong>{{ user.username }}</strong></td>
         <td>{{ user.email }}</td>
-        <td>
-          {% if user.is_admin %}
-            <span class="tag-sm tag-admin">Administrador</span>
-          {% else %}
-            <span class="tag-sm">Gestor</span>
-          {% endif %}
-        </td>
         <td>
           {% if user.is_active %}
             <span class="badge badge-aberta">Ativo</span>

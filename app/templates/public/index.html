@@ -4,13 +4,13 @@
 {% block content %}
 <section class="hero">
   <div class="hero-inner">
-    <div class="hero-badge">Sistema de Notificação</div>
-    <h1 class="hero-title">Incidentes de<br><span class="accent">Violência</span></h1>
-    <p class="hero-sub">A sua notificação é anónima e confidencial. Contribua para um ambiente de saúde mais seguro.</p>
+    <div class="hero-badge">Proteção & Confidencialidade</div>
+    <h1 class="hero-title">A sua <span class="accent">voz importa</span></h1>
+    <p class="hero-sub">Sistema seguro e anónimo para reportar incidentes de violência. A sua segurança e privacidade são a nossa prioridade.</p>
     <div class="hero-actions">
       <a href="{{ url_for('public.nova_notificacao') }}" class="btn btn-primary btn-lg">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-        Submeter Nova Notificação
+        Submeter Notificação
       </a>
       <a href="{{ url_for('public.consultar') }}" class="btn btn-outline btn-lg">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -22,54 +22,55 @@
     <div class="visual-card">
       <div class="visual-icon">
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="32" cy="32" r="30" stroke="#096f35" stroke-width="2" fill="#f0f9f4"/>
-          <path d="M32 18v8M32 34v4" stroke="#096f35" stroke-width="3" stroke-linecap="round"/>
-          <path d="M20 40h24" stroke="#096f35" stroke-width="2"/>
+          <path d="M32 18L40 22V32C40 40 32 46 32 46C32 46 24 40 24 32V22L32 18Z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/>
+          <path d="M28 32L31 35L37 28" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <p>Notificação anónima</p>
+      <p>Completamente seguro</p>
     </div>
     <div class="visual-card">
       <div class="visual-icon">
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="32" cy="32" r="30" stroke="#e9b903" stroke-width="2" fill="#fefbe8"/>
-          <path d="M22 32l7 7 13-14" stroke="#e9b903" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="32" cy="28" r="8" stroke="currentColor" stroke-width="2" fill="none"/>
+          <path d="M20 44C20 38 25 34 32 34C39 34 44 38 44 44" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M32 20V12M32 44V52" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M20 32H12M44 32H52" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </div>
-      <p>Token de acompanhamento</p>
+      <p>Acesso garantido</p>
     </div>
     <div class="visual-card">
       <div class="visual-icon">
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="32" cy="32" r="30" stroke="#096f35" stroke-width="2" fill="#f0f9f4"/>
-          <path d="M20 20h24v18H20zM26 38v6M38 38v6" stroke="#096f35" stroke-width="2" stroke-linecap="round"/>
+          <path d="M20 32L28 40L44 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="32" cy="32" r="26" stroke="currentColor" stroke-width="2" fill="none"/>
         </svg>
       </div>
-      <p>Acompanhe a resolução</p>
+      <p>Acompanhamento</p>
     </div>
   </div>
 </section>
 
 <section class="how-it-works">
   <div class="section-inner">
-    <h2 class="section-title">Como funciona</h2>
+    <h2 class="section-title">O processo é simples</h2>
     <div class="steps">
       <div class="step">
         <div class="step-num">01</div>
         <h3>Preencha o formulário</h3>
-        <p>Descreva o incidente de forma anónima. Não são recolhidos dados de identificação.</p>
+        <p>Descreva o incidente com todos os detalhes que considere relevantes. Pode manter-se completamente anónimo.</p>
       </div>
       <div class="step-arrow">→</div>
       <div class="step">
         <div class="step-num">02</div>
-        <h3>Receba o seu token</h3>
-        <p>Após submissão, recebe um código único para acompanhar a sua notificação.</p>
+        <h3>Receba um código seguro</h3>
+        <p>Guardará um código único (token) para consultar o progresso da sua notificação a qualquer momento.</p>
       </div>
       <div class="step-arrow">→</div>
       <div class="step">
         <div class="step-num">03</div>
-        <h3>Acompanhe a resolução</h3>
-        <p>Use o token para consultar o estado e comunicar com os gestores.</p>
+        <h3>Acompanhe em tempo real</h3>
+        <p>Veja o estado da análise e comunicar com os gestores directamente através do sistema.</p>
       </div>
     </div>
   </div>

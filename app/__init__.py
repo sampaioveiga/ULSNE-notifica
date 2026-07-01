@@ -54,7 +54,7 @@ def create_app():
 def _seed_admin():
     from .models import User
     if User.query.count() == 0:
-        admin = User(username='admin', email='admin@ulsne.min-saude.pt', is_admin=True)
+        admin = User(username='admin', email='admin@ulsne.min-saude.pt', is_manager=True)
         admin.set_password('Admin1234!')
         db.session.add(admin)
         db.session.commit()

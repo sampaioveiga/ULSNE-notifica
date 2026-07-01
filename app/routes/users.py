@@ -11,7 +11,6 @@ bp = Blueprint('users', __name__, url_prefix='/admin/utilizadores')
 class UserForm(FlaskForm):
     username = StringField('Nome de Utilizador', validators=[DataRequired(), Length(min=3, max=80)])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    is_admin = BooleanField('Administrador')
     password = PasswordField('Palavra-passe', validators=[Optional(), Length(min=8)])
     password2 = PasswordField('Confirmar Palavra-passe', validators=[EqualTo('password')])
     submit = SubmitField('Guardar')
@@ -48,17 +47,17 @@ def create_user():
     form = UserForm()
     if form.validate_on_submit():
         if not form.password.data:
-            flash('A palavra-passe é obrigatória para novos utilizadores.', 'danger')
-            return render_template('admin/user_form.html', form=form, title='Novo Utilizador')
+            flash('A palavra-passe é obrigatória para novos gestores.', 'danger')
+            return render_template('admin/user_form.html', form=form, title='Novo Gestor')
         user = User(
             username=form.username.data,
             email=form.email.data,
-            is_admin=form.is_admin.data,
+            is_manager=True,
         )
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash(f'Utilizador "{user.username}" criado com sucesso.', 'success')
+        flash(f'Gestor "{user.username}" criado com sucesso.', 'success')
         return redirect(url_for('users.list_users'))
     return render_template('admin/user_form.html', form=form, title='Novo Utilizador')
 
@@ -71,11 +70,10 @@ def edit_user(user_id):
     if form.validate_on_submit():
         user.username = form.username.data
         user.email = form.email.data
-        user.is_admin = form.is_admin.data
         if form.password.data:
             user.set_password(form.password.data)
         db.session.commit()
-        flash(f'Utilizador "{user.username}" atualizado.', 'success')
+        flash(f'Gestor "{user.username}" atualizado.', 'success')
         return redirect(url_for('users.list_users'))
     return render_template('admin/user_form.html', form=form, title='Editar Utilizador', user=user)
 

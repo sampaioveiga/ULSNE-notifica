@@ -13,7 +13,6 @@ class SMTPForm(FlaskForm):
     port = IntegerField('Porta', validators=[DataRequired(), NumberRange(min=1, max=65535)])
     use_tls = BooleanField('Usar TLS')
     from_email = StringField('Email de Origem', validators=[DataRequired()])
-    to_email = StringField('Email Destinatário (novas notificações)', validators=[DataRequired()])
     submit = SubmitField('Guardar Configuração')
 
 
@@ -27,7 +26,6 @@ def smtp():
         config.port = form.port.data
         config.use_tls = form.use_tls.data
         config.from_email = form.from_email.data
-        config.to_email = form.to_email.data
         db.session.commit()
         flash('Configuração SMTP guardada com sucesso.', 'success')
         return redirect(url_for('settings.smtp'))

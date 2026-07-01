@@ -11,55 +11,88 @@
 <div class="detail-layout">
 
   <div class="detail-main">
+    <!-- Incidente Details -->
     <div class="detail-card">
-      <h3>Dados do Incidente</h3>
+      <h3>📋 Dados do Incidente</h3>
       <dl class="detail-dl">
         <dt>Data / Hora</dt>
-        <dd>{{ notif.data_incidente.strftime('%d/%m/%Y') }}{% if notif.hora_incidente %} às {{ notif.hora_incidente.strftime('%H:%M') }}{% endif %}</dd>
-        <dt>Local</dt>
-        <dd>{{ notif.local_incidente }}{% if notif.servico %} — <em>{{ notif.servico }}</em>{% endif %}</dd>
+        <dd><strong>{{ notif.data_incidente.strftime('%d/%m/%Y') }}</strong>{% if notif.hora_incidente %} às <strong>{{ notif.hora_incidente.strftime('%H:%M') }}</strong>{% endif %}</dd>
+
+        <dt>Local do Incidente</dt>
+        <dd><strong>{{ notif.local_incidente }}</strong>{% if notif.servico %}<br><em style="color: var(--text-muted); font-size: 0.9rem;">{{ notif.servico }}</em>{% endif %}</dd>
+
         {% if notif.unidade_local %}
         <dt>Unidade</dt>
-        <dd>{{ notif.unidade_local }}</dd>
+        <dd><strong>{{ notif.unidade_local }}</strong></dd>
         {% endif %}
+
         <dt>Tipo(s) de Violência</dt>
-        <dd><div class="tag-list">{% for t in notif.tipos_violencia_labels %}<span class="tag">{{ t }}</span>{% endfor %}</div></dd>
-        <dt>Vítima</dt>
-        <dd>{{ notif.tipo_vitima | replace('_', ' ') | title }}</dd>
-        {% if notif.categoria_profissional %}
-        <dt>Categoria Profissional</dt>
-        <dd>{{ notif.categoria_profissional | replace('_', ' ') | title }}</dd>
-        {% endif %}
-        <dt>Perpetrador</dt>
-        <dd>{{ notif.tipo_perpetrador | replace('_', ' ') | title }}</dd>
-        <dt>Descrição</dt>
-        <dd class="text-block">{{ notif.descricao }}</dd>
-        {% if notif.testemunhas %}
-        <dt>Testemunhas</dt>
-        <dd class="text-block">{{ notif.testemunhas }}</dd>
-        {% endif %}
-        {% if notif.medidas_tomadas %}
-        <dt>Medidas Tomadas</dt>
-        <dd class="text-block">{{ notif.medidas_tomadas }}</dd>
-        {% endif %}
-        {% if notif.impacto %}
-        <dt>Impacto Percebido</dt>
-        <dd class="text-block">{{ notif.impacto }}</dd>
-        {% endif %}
+        <dd>
+          <div class="tag-list">
+            {% for t in notif.tipos_violencia_labels %}<span class="tag">{{ t }}</span>{% endfor %}
+          </div>
+        </dd>
       </dl>
     </div>
 
+    <!-- Pessoas Envolvidas -->
     <div class="detail-card">
-      <h3>Histórico de Comunicações</h3>
+      <h3>👥 Pessoas Envolvidas</h3>
+      <dl class="detail-dl">
+        <dt>Tipo de Vítima</dt>
+        <dd><strong>{{ notif.tipo_vitima | replace('_', ' ') | title }}</strong></dd>
+
+        {% if notif.categoria_profissional %}
+        <dt>Categoria Profissional</dt>
+        <dd><strong>{{ notif.categoria_profissional | replace('_', ' ') | title }}</strong></dd>
+        {% endif %}
+
+        <dt>Tipo de Perpetrador</dt>
+        <dd><strong>{{ notif.tipo_perpetrador | replace('_', ' ') | title }}</strong></dd>
+      </dl>
+    </div>
+
+    <!-- Descrição Detalhada -->
+    <div class="detail-card">
+      <h3>📝 Descrição Detalhada</h3>
+      <div class="text-block">{{ notif.descricao }}</div>
+
+      {% if notif.testemunhas %}
+      <div style="margin-top: 1.5rem;">
+        <h4>Testemunhas</h4>
+        <div class="text-block">{{ notif.testemunhas }}</div>
+      </div>
+      {% endif %}
+
+      {% if notif.medidas_tomadas %}
+      <div style="margin-top: 1.5rem;">
+        <h4>Medidas Tomadas</h4>
+        <div class="text-block">{{ notif.medidas_tomadas }}</div>
+      </div>
+      {% endif %}
+
+      {% if notif.impacto %}
+      <div style="margin-top: 1.5rem;">
+        <h4>Impacto Percebido</h4>
+        <div class="text-block">{{ notif.impacto }}</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Comunicações -->
+    <div class="detail-card">
+      <h3>💬 Histórico de Comunicações</h3>
       {% if notif.comments %}
         <div class="comment-thread">
           {% for comment in notif.comments %}
             <div class="comment comment--{{ comment.author_type }}">
               <div class="comment-meta">
                 {% if comment.author_type == 'manager' %}
-                  <span class="comment-author manager-label">{{ comment.author.username if comment.author else 'Gestor' }}</span>
+                  <span class="comment-author manager-label">
+                    {{ comment.author.username if comment.author else 'Gestor' }}
+                  </span>
                 {% else %}
-                  <span class="comment-author user-label">Notificante (anónimo)</span>
+                  <span class="comment-author user-label">Notificante</span>
                 {% endif %}
                 <span class="comment-date">{{ comment.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
               </div>
@@ -68,29 +101,32 @@
           {% endfor %}
         </div>
       {% else %}
-        <p class="empty-thread">Sem comunicações ainda.</p>
+        <p class="empty-thread">Nenhuma comunicação ainda. Adicione um comentário para responder ao notificante.</p>
       {% endif %}
 
       <div class="comment-compose">
-        <h4>Adicionar comentário ao notificante</h4>
+        <h4>Adicionar Resposta</h4>
         <form method="POST">
           {{ comment_form.hidden_tag() }}
           <div class="form-group">
-            {{ comment_form.text(class="form-control textarea" + (" is-invalid" if comment_form.text.errors else ""), rows=4, placeholder="Escreva aqui a resposta ou informação para o notificante...") }}
+            {{ comment_form.text(class="form-control textarea" + (" is-invalid" if comment_form.text.errors else ""), rows=4, placeholder="Escreva a sua resposta ou informação para o notificante...") }}
             {% for e in comment_form.text.errors %}<span class="error">{{ e }}</span>{% endfor %}
           </div>
-          <button type="submit" name="comment-submit" class="btn btn-primary">Enviar Comentário</button>
+          <button type="submit" name="comment-submit" class="btn btn-primary btn-block">Enviar Resposta</button>
         </form>
       </div>
     </div>
   </div>
 
+  <!-- Sidebar -->
   <div class="detail-sidebar">
+    <!-- Estado -->
     <div class="detail-card">
-      <h3>Gestão de Estado</h3>
+      <h3>⚙️ Estado</h3>
       <div class="current-status">
         <span class="badge badge-{{ notif.status }} badge-lg">{{ notif.status_label }}</span>
       </div>
+
       {% if notif.status != 'encerrado' %}
         <form method="POST" class="status-form">
           {{ status_form.hidden_tag() }}
@@ -101,19 +137,31 @@
           <button type="submit" name="status-submit" class="btn btn-warning btn-block">Atualizar Estado</button>
         </form>
       {% else %}
-        <p class="closed-msg">Notificação encerrada. Não é possível alterar o estado.</p>
+        <div class="closed-msg">
+          <strong>✓ Encerrada</strong><br>
+          Esta notificação foi resolvida.
+        </div>
       {% endif %}
     </div>
 
+    <!-- Metadados -->
     <div class="detail-card">
-      <h3>Informação do Registo</h3>
-      <dl class="detail-dl detail-dl--sm">
-        <dt>Submetida</dt>
-        <dd>{{ notif.created_at.strftime('%d/%m/%Y %H:%M') }}</dd>
-        <dt>Última atualização</dt>
-        <dd>{{ notif.updated_at.strftime('%d/%m/%Y %H:%M') }}</dd>
-        <dt>Token (referência)</dt>
-        <dd><code class="token-sm">{{ notif.token[:8] }}…</code></dd>
+      <h3>ℹ️ Referência</h3>
+      <dl class="detail-dl--sm">
+        <dt>ID:</dt>
+        <dd><strong>#{{ notif.id }}</strong></dd>
+
+        <dt>Token:</dt>
+        <dd><code class="token-sm" title="{{ notif.token }}">{{ notif.token[:12] }}…</code></dd>
+
+        <dt>Submetida:</dt>
+        <dd>{{ notif.created_at.strftime('%d/%m/%Y<br>%H:%M') | safe }}</dd>
+
+        <dt>Atualizada:</dt>
+        <dd>{{ notif.updated_at.strftime('%d/%m/%Y<br>%H:%M') | safe }}</dd>
+
+        <dt>Comentários:</dt>
+        <dd><strong>{{ notif.comments | length }}</strong></dd>
       </dl>
     </div>
   </div>

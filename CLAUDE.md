@@ -4,82 +4,129 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
-# Agent Instructions
+## Project Overview
 
-You're working inside the **WAT framework** (Workflows, Agents, Tools). This architecture separates concerns so that probabilistic AI handles reasoning while deterministic code handles execution. That separation is what makes this system reliable.
+**Registo de Notificações de Violência contra Profissionais de Saúde** — A Flask web application for registering and analyzing violence incidents (verbal, physical, psychological) reported by healthcare professionals in the ULS-NE region (Bragança, Portugal).
 
-## The WAT Architecture
+### Key Features
+- **Public incident submission** — Anonymous or confidential form submission
+- **Admin dashboard** — Track incidents by status (open, in analysis, closed), unit, violence type, time patterns
+- **Follow-up system** — Comments and status tracking for each incident
+- **Email notifications** — Configurable SMTP for alerts
+- **User management** — Admin authentication with role-based access
 
-**Layer 1: Workflows (The Instructions)**
-- Markdown SOPs stored in `workflows/`
-- Each workflow defines the objective, required inputs, which tools to use, expected outputs, and how to handle edge cases
-- Written in plain language, the same way you'd brief someone on your team
+---
 
-**Layer 2: Agents (The Decision-Maker)**
-- This is your role. You're responsible for intelligent coordination.
-- Read the relevant workflow, run tools in the correct sequence, handle failures gracefully, and ask clarifying questions when needed
-- You connect intent to execution without trying to do everything yourself
-- Example: If you need to pull data from a website, don't attempt it directly. Read `workflows/scrape_website.md`, figure out the required inputs, then execute `tools/scrape_single_site.py`
+## Tech Stack
 
-**Layer 3: Tools (The Execution)**
-- Python scripts in `tools/` that do the actual work
-- API calls, data transformations, file operations, database queries
-- Credentials and API keys are stored in `.env`
-- These scripts are consistent, testable, and fast
+- **Flask 2.3.3** — Web framework
+- **SQLAlchemy 3.1.1** — ORM for SQLite database
+- **Flask-Login 0.6.3** — User authentication
+- **Flask-WTF 1.2.1** — Form handling with CSRF protection
+- **Gunicorn** — Production WSGI server
+- **SQLite** — Database (auto-created at `instance/notificacoes.db`)
 
-**Why this matters:** When AI tries to handle every step directly, accuracy drops fast. If each step is 90% accurate, you're down to 59% success after just five steps. By offloading execution to deterministic scripts, you stay focused on orchestration and decision-making where you excel.
+---
 
-## How to Operate
+## Development
 
-**1. Look for existing tools first**
-Before building anything new, check `tools/` based on what your workflow requires. Only create new scripts when nothing exists for that task.
-
-**2. Learn and adapt when things fail**
-When you hit an error:
-- Read the full error message and trace
-- Fix the script and retest (if it uses paid API calls or credits, check with me before running again)
-- Document what you learned in the workflow (rate limits, timing quirks, unexpected behavior)
-- Example: You get rate-limited on an API, so you dig into the docs, discover a batch endpoint, refactor the tool to use it, verify it works, then update the workflow so this never happens again
-
-**3. Keep workflows current**
-Workflows should evolve as you learn. When you find better methods, discover constraints, or encounter recurring issues, update the workflow. That said, don't create or overwrite workflows without asking unless I explicitly tell you to. These are your instructions and need to be preserved and refined, not tossed after one use.
-
-## The Self-Improvement Loop
-
-Every failure is a chance to make the system stronger:
-1. Identify what broke
-2. Fix the tool
-3. Verify the fix works
-4. Update the workflow with the new approach
-5. Move on with a more robust system
-
-This loop is how the framework improves over time.
-
-## Running Tools
-
-Tools are standalone Python scripts. Run them directly:
+### Setup
 
 ```bash
-# Install dependencies (if a requirements.txt exists)
+# Create and activate virtual environment
+python3 -m venv venv
+source venv/bin/activate        # Linux/Mac
+# venv\Scripts\activate         # Windows
+
+# Install dependencies
 pip install -r requirements.txt
-
-# Run a tool directly
-python tools/<tool_name>.py
-
-# Run with arguments (check the script's argparse or docstring for params)
-python tools/<tool_name>.py --arg value
 ```
 
-Credentials are loaded from `.env` automatically via `python-dotenv`. Never pass secrets as CLI arguments.
+### Running Locally
 
-## File Structure
-
-```
-.tmp/           # Temporary files (scraped data, intermediate exports). Regenerated as needed.
-tools/          # Python scripts for deterministic execution
-workflows/      # Markdown SOPs defining what to do and how
-.env            # API keys and environment variables
-credentials.json, token.json  # Google OAuth (gitignored)
+```bash
+source venv/bin/activate
+python run.py
 ```
 
-**Core principle:** Local files are just for processing. Anything the user needs to see or use lives in cloud services (Google Sheets, Slides, etc.). Everything in `.tmp/` is disposable and should never be treated as a source of truth.
+App runs at `http://localhost:5000`
+
+**Default admin credentials:**
+- Username: `admin`
+- Password: `Admin1234!`
+- Admin panel: `http://localhost:5000/admin/login`
+
+### Database
+
+- Database is created automatically on first run at `instance/notificacoes.db`
+- To reset after model changes: delete the `.db` file and restart the app
+- Schema is seeded with default admin user on creation
+
+### Email Configuration
+
+SMTP settings are configured via the admin panel at `/admin/settings` and stored in the `SMTPConfig` model. Used for incident notifications.
+
+---
+
+## Architecture
+
+### Core Models (`app/models.py`)
+
+- **Notification** — Incident reports with metadata (date, time, location, violence types, victim/perpetrator info, descriptions, impact assessment)
+- **User** — Admin users with password hashing
+- **Comment** — Follow-up analysis/notes on incidents
+- **SMTPConfig** — Email server configuration
+
+**Key data:** Notifications track 6 violence types (physical, verbal, psychological, sexual, patrimonial, other), victim category (health professional, patient, visitor, other), perpetrator type, and local units (15 health centers + hospitals across the region).
+
+### Routes (`app/routes/`)
+
+- **public.py** — Public incident submission form and success pages
+- **auth.py** — Admin login/logout
+- **backoffice.py** — Incident dashboard, filtering, detail view
+- **users.py** — Admin user management
+- **settings.py** — SMTP configuration
+
+### Templates (`app/templates/`)
+
+- `public/` — Public-facing forms and status pages
+- `admin/` — Admin dashboard and management pages
+- `base.html` — Layout templates with internationalization support (Portuguese)
+
+---
+
+## Common Workflows
+
+### Adding a New Field to Incidents
+
+1. Add column to `Notification` model in `app/models.py`
+2. Update the form in the relevant route (`public.py` or `backoffice.py`)
+3. Update templates to display/edit the field
+4. Delete `instance/notificacoes.db` and restart to regenerate schema
+
+### Changing SMTP Configuration
+
+Admin users configure email settings via `/admin/settings`. Settings are persisted in `SMTPConfig` table and loaded by `app/email_utils.py`.
+
+### Filtering/Searching Incidents
+
+Implement filters in `backoffice.py` route and pass query results to the dashboard template. The model properties like `tipos_violencia_labels` handle label translation.
+
+---
+
+## Production Deployment
+
+```bash
+sudo bash deploy.sh
+```
+
+Uses Gunicorn as WSGI server. Ensure `SECRET_KEY` environment variable is set (currently defaults to insecure dev value in `app/config.py`).
+
+---
+
+## Notes
+
+- All authentication is admin-only; public incident submission is anonymous/unauthenticated
+- Portuguese language used in UI, data fields, and user-facing text
+- CSRF protection enabled globally via Flask-WTF
+- Database uses SQLite for simplicity; consider migration to PostgreSQL for production scale

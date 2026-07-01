@@ -7,7 +7,7 @@
 
 {% block content %}
 <div class="form-card">
-  <p class="form-desc">Configure o servidor de email para envio de notificações automáticas. A ligação é feita sem TLS por defeito (porta 25, rede interna).</p>
+  <p class="form-desc">Configure o servidor de email para envio de notificações automáticas. As notificações serão enviadas para os emails de todos os gestores ativos. A ligação é feita sem TLS por defeito (porta 25, rede interna).</p>
   <form method="POST">
     {{ form.hidden_tag() }}
     <div class="form-row">
@@ -26,17 +26,10 @@
       {{ form.use_tls() }} {{ form.use_tls.label }}
       <span class="field-hint">Desativado por defeito (rede interna porta 25)</span>
     </div>
-    <div class="form-row">
-      <div class="form-group">
-        {{ form.from_email.label }}
-        {{ form.from_email(class="form-control" + (" is-invalid" if form.from_email.errors else "")) }}
-        {% for e in form.from_email.errors %}<span class="error">{{ e }}</span>{% endfor %}
-      </div>
-      <div class="form-group">
-        {{ form.to_email.label }}
-        {{ form.to_email(class="form-control" + (" is-invalid" if form.to_email.errors else "")) }}
-        {% for e in form.to_email.errors %}<span class="error">{{ e }}</span>{% endfor %}
-      </div>
+    <div class="form-group">
+      {{ form.from_email.label }}
+      {{ form.from_email(class="form-control" + (" is-invalid" if form.from_email.errors else "")) }}
+      {% for e in form.from_email.errors %}<span class="error">{{ e }}</span>{% endfor %}
     </div>
     <div class="form-actions">
       {{ form.submit(class="btn btn-primary") }}
